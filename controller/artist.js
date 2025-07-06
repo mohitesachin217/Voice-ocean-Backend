@@ -473,6 +473,91 @@ exports.getArtistDataByName = (req, res) => {
     });
   });
 };
+exports.getArtistDataByLanguageNameGender = (req, res) => {
+  const {languageId, name, gender } = req.params;
+
+  if (!name) {
+    res.status(400).send("Name is missing.");
+    return;
+  }
+
+  if (!gender) {
+    res.status(400).send("Gender is missing.");
+    return;
+  }
+
+  if (!languageId) {
+    res.status(400).send("Language is missing.");
+    return;
+  }
+
+  const artistQuery = "SELECT * FROM artists WHERE name = ?";
+  connection.query(artistQuery, [name], (err, artistResults) => {
+    if (err) {
+      console.error("Error fetching artist:", err);
+      res.status(500).send("Error fetching artist");
+      return;
+    }
+
+    if (artistResults.length === 0) {
+      res.status(404).send("Artist not found.");
+      return;
+    }
+
+    const artist = artistResults[0];
+    const artistId = artist.id;
+
+    const languagesQuery = "SELECT * FROM languages WHERE artist_id = ?";
+    const categoriesQuery = "SELECT * FROM category WHERE artist_id = ?";
+    const voiceSamplesQuery = "SELECT * FROM voice_samples WHERE artist_id = ?";
+
+    connection.query(languagesQuery, [artistId], (err, languagesResults) => {
+      if (err) {
+        console.error("Error fetching languages:", err);
+        res.status(500).send("Error fetching languages");
+        return;
+      }
+
+      connection.query(
+        categoriesQuery,
+        [artistId],
+        (err, categoriesResults) => {
+          if (err) {
+            console.error("Error fetching categories:", err);
+            res.status(500).send("Error fetching categories");
+            return;
+          }
+
+          connection.query(
+            voiceSamplesQuery,
+            [artistId],
+            (err, voiceSamplesResults) => {
+              if (err) {
+                console.error("Error fetching voice samples:", err);
+                res.status(500).send("Error fetching voice samples");
+                return;
+              }
+
+              const baseURL = "https://voiceoceanllp.com:3003/";
+              const updatedVoiceSamples = voiceSamplesResults.map((sample) => ({
+                ...sample,
+                sample: `${baseURL}${sample.sample}`,
+              }));
+              const artistData = {
+                artist,
+                languages: languagesResults,
+                categories: categoriesResults,
+                voiceSamples: updatedVoiceSamples,
+              };
+
+              res.status(200).json(artistData);
+            }
+          );
+        }
+      );
+    });
+  });
+};
 
 // update artist
 exports.updateArtist = (req, res) => {
