@@ -24,6 +24,7 @@ router.post(
 // artist
 router.post("/create/artists", artist.addArtist);
 router.get("/artists", artist.getArtist);
+router.get("/artists/profile/:languageId/:name/:gender", artist.getArtistDataByLanguageNameGender);
 router.get("/artists/profile/:artistId", artist.getArtistData);
 router.get("/artists/profile/name/:name", artist.getArtistDataByName);
 router.patch("/update/artist/:artistId", artist.updateArtist);
