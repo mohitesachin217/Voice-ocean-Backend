@@ -491,8 +491,8 @@ exports.getArtistDataByLanguageNameGender = (req, res) => {
     return;
   }
 
-  const artistQuery = "SELECT * FROM artists WHERE name = ?";
-  connection.query(artistQuery, [name], (err, artistResults) => {
+  const artistQuery = "SELECT * FROM artists WHERE name = ? and languages = ? and gender = ?";
+  connection.query(artistQuery, [name, languageId, gender], (err, artistResults) => {
     if (err) {
       console.error("Error fetching artist:", err);
       res.status(500).send("Error fetching artist");
