@@ -1,4 +1,5 @@
 const express = require("express");
+const session = require('express-session'); // 🔧
 const cors = require("cors");
 const https = require("https");
 const fs = require("fs");
@@ -7,9 +8,31 @@ const cookieParser = require("cookie-parser");
 require("dotenv").config();
 const Routes = require("./routes/routes");
 const connection = require("./db.js");
+const bodyParser = require('body-parser');
 
 const port = process.env.PORT || 3003;
 const app = express();
+
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// 🔧 Add session middleware BEFORE anything that uses req.session
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
+
+// 🔧 Now require and use auth middleware
+// const auth = require('./middleware/auth');
+
+// app.use((req, res, next) => {
+//   // Allow unauthenticated access to login/logout
+//   const openRoutes = ['/login', '/logout'];
+//   if (openRoutes.includes(req.path)) {
+//     return next();
+//   }
+//   return auth(req, res, next);
+// });
 
 // Load SSL Certificates (Replace with real certs in production)
 const options = {
@@ -34,7 +57,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// API Routes
+// Routes
+const authRoutes = require('./routes/auth');
+app.use('/', authRoutes);
+
 app.get("/", (req, res) => res.status(200).json("success"));
 app.get("/server", (req, res) => res.send("server is running"));
 app.use("/", Routes);

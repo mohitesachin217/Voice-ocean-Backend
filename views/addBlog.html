@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Blog</title>
+  <style>
+  form {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 50px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+form input[type="text"],
+form textarea,
+form input[type="file"] {
+  width: 100%;
+  padding: 12px;
+  margin: 12px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.3s ease;
+}
+
+form input[type="text"]:focus,
+form textarea:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 4px rgba(74, 144, 226, 0.4);
+}
+
+form textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+form button {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin-top: 15px;
+  background: #4a90e2;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s ease;
+}
+
+form button:hover {
+  background: #357abd;
+}
+
+form button:active {
+  transform: scale(0.98);
+}
+
+form h1{
+  text-align: center;
+}
+  </style>
+</head>
+<body>
+  
+  <form action="/add/saveBlog" method="POST" enctype="multipart/form-data">
+    <h1>Create Blog</h1>
+    <input type="text" name="title" placeholder="Blog Title" required /><br>
+    <textarea name="content" placeholder="Write content..." required></textarea><br>
+    <input type="file" name="image" accept="image/*" /><br>
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>

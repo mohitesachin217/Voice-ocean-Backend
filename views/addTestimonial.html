@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Blog</title>
+  <style>
+    /* Heading style */
+.form-heading {
+  text-align: center;
+  font-size: 28px;
+  margin: 30px 0 20px;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #333;
+}
+
+/* Form container */
+.testimonial-form {
+  max-width: 600px;
+  margin: 0 auto 40px;
+  padding: 25px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Inputs */
+.testimonial-form input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  margin: 12px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Focus effect */
+.testimonial-form input[type="text"]:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 5px rgba(74, 144, 226, 0.4);
+}
+
+/* Button */
+.testimonial-form button {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin-top: 15px;
+  background: #4a90e2;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s ease;
+}
+
+/* Button hover/active */
+.testimonial-form button:hover {
+  background: #357abd;
+}
+.testimonial-form button:active {
+  transform: scale(0.98);
+}
+h1{
+  text-align: center;
+}
+  </style>
+</head>
+<body>
+  <h1>Create Blog</h1>
+  <form action="/add/testimonials" method="POST" class="testimonial-form">
+    <input type="text" name="seo_title" placeholder="Seo Title" required /><br>
+    <input type="text" name="testimonial_name" placeholder="Testimonial Name" required /><br>
+    <input type="text" name="location" placeholder="Location" required /><br>
+    <input type="text" name="testimonial_description" placeholder="Testimonial Description" required /><br>
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>

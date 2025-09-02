@@ -2,42 +2,34 @@ const connection = require("../db.js");
 const shortUUID = require("short-uuid");
 
 exports.addTestimonials = (req, res) => {
-  const { seo_title, testimonial_name, location, testimonial_description } =
-    req.body;
+  const { seo_title, testimonial_name, location, testimonial_description } = req.body;
+
   if (!testimonial_name || !location || !testimonial_description) {
-    return res
-      .status(400)
-      .json(
-        "some fields are missing - testimonial_name, location, testimonial_description "
-      );
+    return res.status(400).json({
+      error: "Some fields are missing - testimonial_name, location, testimonial_description"
+    });
   }
 
-  const testimonialId = shortUUID.generate();
+  console.log("Incoming body:", req.body); // Debug log
+
   const sql =
-    "INSERT INTO testimonials (testimonial_id,seo_title, testimonial_name, location, testimonial_description) VALUES (?, ?, ?, ?,?)";
-  const values = [
-    testimonialId,
-    seo_title,
-    testimonial_name,
-    location,
-    testimonial_description,
-  ];
+    "INSERT INTO  testimonials (seo_title, testimonial_name, location, testimonial_description) VALUES (?, ?, ?, ?)";
+  const values = [seo_title || null, testimonial_name, location, testimonial_description];
 
   connection.query(sql, values, (err, result) => {
     if (err) {
-      console.error("Error inserting data: " + err);
-      res
-        .status(500)
-        .json({
-          error: "An error occurred while inserting data into the database",
-        });
-      return;
+      console.error("Error inserting data:", err); // Proper error log
+      return res.status(500).json({
+        error: "An error occurred while inserting data into the database",
+        details: err.sqlMessage, // helpful for debugging
+      });
     }
 
     console.log("Data inserted successfully:", result);
     res.status(201).json({ message: "Data inserted successfully" });
   });
 };
+
 
 
 

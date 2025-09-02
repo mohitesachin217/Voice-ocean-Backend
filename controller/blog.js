@@ -5,47 +5,33 @@ const { createReadStream } = require("fs");
 const { pipeline } = require("stream");
 const { v4: uuidv4 } = require("uuid");
 
-exports.addBlog = (req, res) => {
+exports.saveBlog = (req, res) => {
   const { title, content } = req.body;
-  const blogImage = req.file; // Assuming you use multer for file uploads
+  const blogImage = req.file;
 
   // Validate required fields
   if (!title || !content || !blogImage) {
-    res.status(400).json("Title, content, or image is missing");
-    return;
+    return res.status(400).json("Title, content, or image is missing");
   }
 
-  const imageId = uuidv4(); // Unique ID for the image
-  const ext = blogImage.originalname.split(".").pop(); // Get file extension
-  const imagePath = `blog_images/${imageId}.${ext}`; // Target file path
+  // Read file into buffer
+  const imageBuffer = fs.readFileSync(blogImage.path);
 
-  // Move the uploaded file to the target folder
-  fs.rename(blogImage.path, imagePath, (err) => {
+  // Insert blog into DB
+  const insertBlogQuery =
+    "INSERT INTO blogs (title, image, content) VALUES (?, ?, ?)";
+
+  connection.query(insertBlogQuery, [title, imageBuffer, content], (err, result) => {
     if (err) {
-      console.error("Error moving blog image:", err);
-      res.status(500).json("Error saving blog image");
-      return;
+      console.error("Error adding blog:", err);
+      return res.status(500).json("Error adding blog");
     }
 
-    // Insert the blog data into the database
-    const insertBlogQuery =
-      "INSERT INTO blogs (title, image, content) VALUES (?, ?, ?)";
-    connection.query(
-      insertBlogQuery,
-      [title, imagePath, content],
-      (err, result) => {
-        if (err) {
-          console.error("Error adding blog:", err);
-          res.status(500).json("Error adding blog");
-          return;
-        }
-
-        console.log("Blog added successfully");
-        res.status(200).json("Blog added successfully");
-      }
-    );
+    console.log("Blog added successfully");
+    res.status(200).json("Blog added successfully");
   });
 };
+
 
 // get all blogs
 exports.getAllBlogs = (req, res) => {
@@ -63,7 +49,7 @@ exports.getAllBlogs = (req, res) => {
     // Modify results to include the full URL for the image path
     const modifiedResults = results.map((result) => ({
       ...result,
-      image: `${req.protocol}://${req.get("host")}/${result.image}`,
+      image: `data:image/jpeg;base64,${result.image.toString("base64")}`,
     }));
 
     res.status(200).json(modifiedResults);
@@ -227,7 +213,8 @@ exports.getBlogById = (req, res) => {
     const blog = results[0];
 
     // Modify the image path to include the host and protocol
-    blog.image = `${req.protocol}://${req.get("host")}/${blog.image}`;
+    const base64String = Buffer.from(blog.image).toString("base64");
+    blog.image = `data:image/jpeg;base64,${base64String}`;
 
     res.status(200).json(blog);
   });

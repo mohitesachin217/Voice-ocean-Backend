@@ -10,8 +10,13 @@ const currentProjects = require("../controller/currentProjects.js");
 const testimonials = require("../controller/testimonials.js");
 const client = require("../controller/client.js");
 const importArist = require("../controller/ImportArtist.js");
-
+const path = require('path');
 const router = express.Router();
+
+const auth = require('../middleware/auth');
+
+// Apply middleware to all routes below
+// router.use(auth);
 
 // Import artist
 router.post(
@@ -34,10 +39,26 @@ router.get("/search/artist", artist.searchArtist);
 
 // Blog
 router.post(
-  "/add/blog",
+  "/add/saveBlog",
   upload.single("image"),
-  blog.addBlog
+  blog.saveBlog
 );
+
+
+
+router.get('/add/blog', (req, res) => {
+  const path = require('path');
+  const blogAddPage = path.resolve(__dirname, '../views/addBlog.html');
+  res.sendFile(blogAddPage);
+});
+
+router.get('/add/addTestimonial', (req, res) => {
+  const path = require('path');
+  const testimonialAddPage = path.resolve(__dirname, '../views/addTestimonial.html');
+  res.sendFile(testimonialAddPage);
+});
+
+
 router.get("/get/blog", blog.getAllBlogs);
 router.get("/get/blog/:id", blog.getBlogById);
 router.delete("/delete/blog/:id", blog.deleteBlog);
